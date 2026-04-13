@@ -7,9 +7,14 @@ provider "aws" {
 variable "aws_access_key" {}
 variable "aws_secret_key" {}
 
+# 1. Default VPC fetch karein (Security Group ko isse link karne ke liye)
+resource "aws_default_vpc" "default" {}
+
+# 2. Security Group
 resource "aws_security_group" "doctor_ai_sg" {
-  name        = "doctor_ai_sg"
+  name        = "doctor_ai_sg_v2"
   description = "Allow SSH and HTTP traffic"
+  vpc_id      = aws_default_vpc.default.id # Yeh line zaroori hai
 
   ingress {
     description = "SSH from anywhere"
@@ -30,19 +35,21 @@ resource "aws_security_group" "doctor_ai_sg" {
   egress {
     from_port   = 0
     to_port     = 0
-    protocol    = "-1"
+    protocol    = "-1" # Allows all traffic
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
 
-# 2. EC2 Instance
+# 3. EC2 Instance
 resource "aws_instance" "doctor_ai_server" {
-  ami           = "ami-03f4878755434977f" # Mumbai Ubuntu 22.04 AMI
+  ami           = "ami-03f4878755434977f" # Ubuntu 22.04 LTS ap-south-1
   instance_type = "t3.micro"
   key_name      = "doctor-ai-key"
 
+  # Security Group Attachment
   vpc_security_group_ids = [aws_security_group.doctor_ai_sg.id]
 
+  # SSH connect hone mein thoda time lagta hai, isliye tags
   tags = {
     Name = "Doctor-AI-Server"
   }
