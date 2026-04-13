@@ -41,15 +41,18 @@ resource "aws_security_group" "doctor_ai_sg" {
 }
 
 # 3. EC2 Instance
+
 resource "aws_instance" "doctor_ai_server" {
-  ami           = "ami-03f4878755434977f" # Ubuntu 22.04 LTS ap-south-1
-  instance_type = "t3.micro"
-  key_name      = "doctor-ai-key"
+  ami                         = "ami-03f4878755434977f"
+  instance_type               = "t3.micro"
+  key_name                    = "doctor-ai-key"
+  
+  # Security Group attach karein
+  vpc_security_group_ids      = [aws_security_group.doctor_ai_sg.id]
+  
+  # Yeh line confirm karegi ki Public IP mile
+  associate_public_ip_address = true
 
-  # Security Group Attachment
-  vpc_security_group_ids = [aws_security_group.doctor_ai_sg.id]
-
-  # SSH connect hone mein thoda time lagta hai, isliye tags
   tags = {
     Name = "Doctor-AI-Server"
   }
