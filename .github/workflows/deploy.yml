@@ -16,7 +16,7 @@ jobs:
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          key: ${{ secrets.AWS_SSH_KEY }}
           script: |
             # 1. Update and install dependencies (Pehli baar ke liye)
             sudo apt update -y
