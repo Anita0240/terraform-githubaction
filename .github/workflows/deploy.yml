@@ -18,33 +18,48 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.AWS_SSH_KEY }}
           script: |
-            # 1. Update and install dependencies (Pehli baar ke liye)
-            sudo apt update -y
-            sudo apt install python3-pip python3-venv nginx -y
+            # 1. System Updates (Locks se bachne ke liye logic)
+            sudo apt-get update -y
+            # Nginx aur Python tools install karna
+            sudo apt-get install -y python3-pip python3-venv nginx git
 
             # 2. Project directory setup
             mkdir -p ~/Doctor_AI
             cd ~/Doctor_AI
 
-            # 3. Code pull/clone logic
+            # 3. Code pull/clone logic (Zaroori Fix: Force Reset)
             if [ -d ".git" ]; then
-              git pull origin main
+              echo "Pulling latest changes..."
+              git fetch origin main
+              git reset --hard origin/main  # Local conflicts hatane ke liye
             else
+              echo "Cloning repository..."
               git clone https://github.com/${{ github.repository }} .
             fi
 
             # 4. Environment setup
-            python3 -m venv venv
+            # Agar venv nahi hai toh banao
+            if [ ! -d "venv" ]; then
+                python3 -m venv venv
+            fi
             source venv/bin/activate
+
+            # Pip upgrade aur requirements install
+            python3 -m pip install --upgrade pip
+            # Error-prone packages (numpy/django) ko handle karne ke liye requirements install karein
             pip install -r requirements.txt
-            
-            # .env file create karna
+
+            # 5. Environment Variables (.env)
             echo "GROQ_API_KEY=${{ secrets.GROQ_API_KEY }}" > .env
             echo "SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}" >> .env
             echo "DEBUG=False" >> .env
+            # Domain ya IP zaroor add karein settings.py ke ALLOWED_HOSTS ke liye
+            echo "ALLOWED_HOSTS=${{ secrets.EC2_HOST }}" >> .env
 
-            # 5. Database migrations
+            # 6. Django Operations
             python manage.py migrate --noinput
             python manage.py collectstatic --noinput
 
-            # Note: Gunicorn restart command baad mein add karenge jab gunicorn setup ho jayega
+            # 7. Gunicorn Restart (Future-proofing)
+            # Jab aap gunicorn setup karenge, tab ye kaam aayega:
+            # sudo systemctl restart gunicorn
