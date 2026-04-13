@@ -2,7 +2,7 @@ provider "aws" {
   region     = "ap-south-1" 
   }
 
-# 1. Security Group (Port 80 aur 22 )
+
 resource "aws_security_group" "doctor_ai_sg" {
   name        = "doctor_ai_sg"
   description = "Allow SSH and HTTP traffic"
