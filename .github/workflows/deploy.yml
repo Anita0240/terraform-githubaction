@@ -25,7 +25,7 @@ jobs:
           terraform init
           terraform apply -auto-approve
           echo "instance_ip=$(terraform output -raw instance_ip)" >> $GITHUB_ENV
-
+#go
       - name: Deploy Django to New EC2
         uses: appleboy/ssh-action@master
         with:
