@@ -1,8 +1,15 @@
+venv/
+.venv/
+_pycache_/
 .env
 db.sqlite3
-_pycache_/
-*.pkl
 .terraform/
+terraform/.terraform/
 *.tfstate
 *.tfstate.backup
 .terraform.lock.hcl
+.venv/
+venv/
+*.pkl
+.env
+_pycache_/
