@@ -10,6 +10,6 @@ terraform/.terraform/
 .terraform.lock.hcl
 .venv/
 venv/
-*.pkl
+
 .env
 _pycache_/

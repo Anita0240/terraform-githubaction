@@ -13,6 +13,7 @@ jobs:
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
+        terraform_wrapper: false
 
       - name: Terraform Init & Apply
         id: tf
